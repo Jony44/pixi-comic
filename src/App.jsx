@@ -24,11 +24,11 @@ export default function PixiComicApp() {
   const [comicsList, setComicsList] = useState([
     {
       id: 1,
-      title: 'Spider Verse Part 1',
+      title: 'Doomquest',
       price: 'Free',
       image: '6294257036396533852.jpg',
       pdfUrl: 'Doomquest 003 (2026).pdf',
-      totalPages: 
+      totalPages: '23'
     }
   ]);
 
