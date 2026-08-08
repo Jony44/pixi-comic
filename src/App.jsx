@@ -316,10 +316,10 @@ export default function PixiComicApp() {
           {/* PDF Display Frame */}
           <div className="w-full max-w-4xl bg-black rounded-lg shadow-2xl overflow-hidden h-[80vh] mx-auto relative flex items-center justify-center">
             {readingComic.pdfUrl ? (
-             <iframe
-  src={`https://docs.google.com/gview?url=${window.location.origin}/${encodeURIComponent(readingComic.pdfUrl)}&embedded=true`}
-  title={readingComic.title}
-  className="w-full h-full border-0"
+             <embed
+  src={`/${readingComic.pdfUrl}#page=${currentPage}`}
+  type="application/pdf"
+  className="w-full h-full"
 />
             ) : (
               <div className="text-white text-center p-6">
