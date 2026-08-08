@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Menu, Search, ShoppingCart, Settings, LogOut,
-  User, Moon, Sun, X, ChevronRight, CheckCircle, Trash2, CreditCard, BookOpen, ArrowLeft, ArrowRight
+  User, Moon, Sun, X, ChevronRight, CheckCircle, Trash2, CreditCard, BookOpen, ArrowLeft, ArrowRight, Lock
 } from 'lucide-react';
 
 // ==========================================
@@ -344,97 +344,94 @@ export default function PixiComicApp() {
       {/* Comic Details Modal */}
       {selectedComic && !showPayment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className={`max-w-3xl w-full rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
-            <div className="md:w-2/5 h-64 md:h-auto relative">
+          <div className={`w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl ${darkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}>
+            <div className="relative h-64">
               <img src={selectedComic.image} alt={selectedComic.title} className="w-full h-full object-cover" />
-              <button onClick={() => setSelectedComic(null)} className="absolute top-4 left-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70">
+              <button onClick={() => setSelectedComic(null)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70">
                 <X size={20} />
               </button>
             </div>
-            <div className="md:w-3/5 p-6 flex flex-col justify-center">
-              <h2 className="text-3xl font-black mb-2">{selectedComic.title}</h2>
-              <p className="text-sm text-slate-500 mb-6">PDF Length: {selectedComic.totalPages} Pages</p>
-
-              <div className="space-y-4">
-                {/* Buy Single Option */}
-                <div onClick={() => { setPendingPurchase(selectedComic); setShowPayment(true); }} className={`border-2 rounded-2xl p-4 cursor-pointer transition hover:border-blue-500 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold">Buy this issue</h4>
-                      <p className="text-xs text-slate-500 mt-1">Unlock this PDF permanently</p>
-                    </div>
-                    <span className="text-xl font-black">{selectedComic.price}</span>
-                  </div>
-                </div>
-
-                {/* VIP Subscription Option */}
-                <div onClick={() => { setPendingPurchase('subscription'); setShowPayment(true); }} className="relative border-2 border-amber-500 bg-amber-50 dark:bg-amber-500/10 rounded-2xl p-4 cursor-pointer transform hover:scale-[1.02] transition">
-                  <div className="absolute -top-3 -right-3 bg-amber-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Best Value</div>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold text-amber-600 dark:text-amber-400 text-lg flex items-center gap-2">
-                        Premium VIP Pass <CheckCircle size={16} />
-                      </h4>
-                      <p className="text-xs text-slate-600 mt-1">Read ALL comics instantly</p>
-                    </div>
-                    <span className="text-xl font-black text-amber-600">$4.99<span className="text-sm">/mo</span></span>
-                  </div>
-                </div>
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-black">{selectedComic.title}</h2>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-bold rounded-lg">{selectedComic.price}</span>
               </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+                Dive into this amazing issue. Fully loaded with {selectedComic.totalPages} pages of stunning artwork and a thrilling storyline. Get your digital PDF copy now and start reading instantly on any device!
+              </p>
+              
+              <button
+                onClick={() => { setPendingPurchase(selectedComic); setShowPayment(true); }}
+                className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition flex items-center justify-center gap-2 ${themeBlue}`}
+              >
+                <Lock size={18} /> Unlock this Comic ({selectedComic.price})
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Payment Modal */}
+      {/* Modern Payment UI Overlay */}
       {showPayment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className={`max-w-md w-full rounded-3xl overflow-hidden shadow-2xl p-6 ${darkMode ? 'bg-slate-900 text-white' : 'bg-white'}`}>
+          <div className={`w-full max-w-md rounded-3xl overflow-hidden shadow-2xl p-6 ${darkMode ? 'bg-slate-900 text-white border border-slate-800' : 'bg-white text-slate-900'}`}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-black">Checkout</h3>
-              <button onClick={() => { setShowPayment(false); setPendingPurchase(null); }} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
+              <h2 className="text-2xl font-black">Checkout</h2>
+              <button onClick={() => setShowPayment(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full">
                 <X size={20} />
               </button>
             </div>
 
-            <p className="text-sm font-bold mb-4 text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900">
-              Purchasing: {pendingPurchase === 'subscription' ? 'VIP Premium Pass ($4.99/mo)' : `${pendingPurchase.title} (${pendingPurchase.price})`}
-            </p>
+            <div className="mb-6 p-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center gap-4">
+              <div className="w-12 h-16 rounded-md overflow-hidden flex-shrink-0">
+                 <img src={pendingPurchase === 'subscription' ? 'https://images.unsplash.com/photo-1618519764620-7403abdbdf9c?q=80&w=100' : pendingPurchase.image} alt="Cover" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <p className="font-bold">{pendingPurchase === 'subscription' ? 'VIP Premium Pass' : pendingPurchase.title}</p>
+                <p className="text-blue-600 font-black">{pendingPurchase === 'subscription' ? '$14.99/mo' : pendingPurchase.price}</p>
+              </div>
+            </div>
 
-            <div className="flex gap-2 mb-6">
-              <button onClick={() => setPaymentMethod('card')} className={`flex-1 py-3 border-2 rounded-xl flex items-center justify-center gap-2 font-bold transition ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/30' : 'border-slate-200 text-slate-500'}`}>
-                <CreditCard size={18} /> Card
+            <h3 className="font-bold text-sm mb-3">Payment Method</h3>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button 
+                onClick={() => setPaymentMethod('card')}
+                className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition ${paymentMethod === 'card' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700'}`}
+              >
+                <CreditCard size={24} className={paymentMethod === 'card' ? 'text-blue-600' : 'text-slate-400'} />
+                <span className="text-xs font-bold">Credit Card</span>
               </button>
-              <button onClick={() => setPaymentMethod('paypal')} className={`flex-1 py-3 border-2 rounded-xl flex items-center justify-center gap-2 font-bold transition ${paymentMethod === 'paypal' ? 'border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/30' : 'border-slate-200 text-slate-500'}`}>
-                PayPal
+              <button 
+                onClick={() => setPaymentMethod('paypal')}
+                className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700'}`}
+              >
+                <div className="font-black italic text-lg text-blue-800 dark:text-blue-400 leading-none mt-1">PayPal</div>
+                <span className="text-xs font-bold mt-1">PayPal</span>
               </button>
             </div>
 
-            <form onSubmit={handlePayment} className="space-y-4">
-              {paymentMethod === 'card' ? (
-                <>
-                  <input type="text" placeholder="Cardholder Name" required className={`w-full p-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`} />
-                  <input type="text" placeholder="Card Number (0000 0000 0000 0000)" required className={`w-full p-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`} />
-                  <div className="flex gap-4">
-                    <input type="text" placeholder="MM/YY" required className={`w-1/2 p-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`} />
-                    <input type="text" placeholder="CVC" required className={`w-1/2 p-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`} />
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm text-slate-500 mb-4">You will be redirected to PayPal to complete your purchase securely.</p>
-                  <input type="email" placeholder="PayPal Email" required className={`w-full p-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`} />
+            {paymentMethod === 'card' && (
+              <div className="space-y-3 mb-6">
+                <input type="text" placeholder="Card Number" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent outline-none focus:border-blue-500 text-sm" />
+                <div className="grid grid-cols-2 gap-3">
+                  <input type="text" placeholder="MM/YY" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent outline-none focus:border-blue-500 text-sm" />
+                  <input type="text" placeholder="CVC" className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent outline-none focus:border-blue-500 text-sm" />
                 </div>
-              )}
-              
-              <button type="submit" className={`w-full py-4 text-white font-black rounded-xl mt-4 ${themeBlue} shadow-lg flex items-center justify-center gap-2`}>
-                <Lock size={16} /> Pay Securely Now
-              </button>
-            </form>
+              </div>
+            )}
+
+            <button
+              onClick={handlePayment}
+              className={`w-full py-4 rounded-xl font-black text-white shadow-lg transition flex items-center justify-center gap-2 ${themeBlue}`}
+            >
+              Pay {pendingPurchase === 'subscription' ? '$14.99' : pendingPurchase.price}
+            </button>
+            <p className="text-center text-[10px] text-slate-400 mt-4 flex items-center justify-center gap-1">
+              <Lock size={10} /> Secure encrypted payment
+            </p>
           </div>
         </div>
       )}
-
     </div>
   );
 }
