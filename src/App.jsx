@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Menu, Search, ShoppingCart, Settings, LogOut, 
-  User, Shield, Moon, Sun, X, ChevronRight, CheckCircle, PlusCircle, Trash2, Lock 
+  User, Shield, Moon, Sun, X, ChevronRight, CheckCircle, PlusCircle, Trash2, Lock, CreditCard 
 } from 'lucide-react';
 
 export default function PixiComicApp() {
@@ -10,33 +10,32 @@ export default function PixiComicApp() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModal, setIsLoginModal] = useState(true);
   const [selectedComic, setSelectedComic] = useState(null);
+  const [readingComic, setReadingComic] = useState(null);
+  const [isCheckout, setIsCheckout] = useState(false);
   
-  // Login වෙන User ගේ Email එක සහ Admin ද නැද්ද යන්න තේਰීමට
+  // Bank Details Form State
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvc, setCardCvc] = useState('');
+
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [loggedUserEmail, setLoggedUserEmail] = useState('');
 
-  // ** මෙන්න මෙතැනට ඔයාගේ Admin Gmail එක දාන්න **
-  const ADMIN_EMAIL = "maneesharavihara0@gmail.com"; // උදාහරණයක් ලෙස ඔයාගේ සැබෑ ඊමේල් එක මෙතැනට දෙන්න
-
-  // ලොග් වී සිටින පරිශීලකයා Admin ද යන්න ස්වයංක්‍රීයව පරීක්ෂා කරයි
+  const ADMIN_EMAIL = "maneesharavihara0@gmail.com";
   const isAdmin = loggedUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   const [cart, setCart] = useState([]);
-  const [boughtComics, setBoughtComics] = useState([
-    { id: 1, title: 'Spider Verse Part 1', image: 'https://images.unsplash.com/photo-1608889476561-6242cfdbf622?w=300&q=80', price: '$2.99' },
-  ]);
+  const [boughtComics, setBoughtComics] = useState([]);
 
-  const [newComics, setNewComics] = useState([
-    { id: 1, title: 'The Last Avenger', price: '$2.99', image: 'https://images.unsplash.com/photo-1612036782180-6f0b6ce846ce?w=300&q=80' },
-    { id: 2, title: 'Cyber City 2099', price: '$1.99', image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=300&q=80' },
-    { id: 3, title: 'Space Rangers', price: 'Free', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&q=80' },
-    { id: 4, title: 'Dark Knight Tales', price: '$3.50', image: 'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300&q=80' },
-  ]);
+  // Dummy comics removed, starts empty or with user uploads
+  const [newComics, setNewComics] = useState([]);
 
+  // Admin Form States
   const [adminTitle, setAdminTitle] = useState('');
   const [adminPrice, setAdminPrice] = useState('');
-  const [adminImage, setAdminImage] = useState('');
+  const [adminImage, setAdminImage] = useState(''); // Image link එක සඳහා
+  const [adminPdf, setAdminPdf] = useState('');      // PDF link එක සඳහා
 
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
@@ -57,28 +56,17 @@ export default function PixiComicApp() {
     }
   };
 
-  const handleUploadComic = (e) => {
+  const handlePaymentSubmit = (e) => {
     e.preventDefault();
-    if (!isAdmin) {
-      alert("Unauthorized! Only Admin can upload comics.");
+    if(!cardNumber || !cardExpiry || !cardCvc) {
+      alert("Please fill in all bank/card details.");
       return;
     }
-    if (!adminTitle || !adminPrice || !adminImage) {
-      alert("Please fill all fields!");
-      return;
-    }
-    const newEntry = {
-      id: Date.now(),
-      title: adminTitle,
-      price: adminPrice,
-      image: adminImage
-    };
-    setNewComics([newEntry, ...newComics]);
-    setAdminTitle('');
-    setAdminPrice('');
-    setAdminImage('');
-    alert("Comic uploaded successfully by Admin! 🚀");
-    setScreen('discover');
+    alert("Payment successful! Comic unlocked and added to your Library. 🎉");
+    setBoughtComics([...boughtComics, selectedComic]);
+    setIsCheckout(false);
+    setSelectedComic(null);
+    setScreen('profile');
   };
 
   const Sidebar = () => (
@@ -90,7 +78,7 @@ export default function PixiComicApp() {
       <div className={`fixed top-0 left-0 h-full w-72 bg-slate-900 text-white z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} shadow-2xl flex flex-col`}>
         <div className="p-6 border-b border-slate-800 flex justify-between items-center">
           <div className="h-8 w-28 overflow-hidden rounded-md cursor-pointer flex items-center" onClick={() => { setScreen('discover'); setIsMenuOpen(false); }}>
-            <img src="/6318815573495714036.jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+            <span className="font-black text-xl tracking-wider text-blue-400">PIXI</span>
           </div>
           <button onClick={() => setIsMenuOpen(false)} className="p-1 hover:bg-slate-800 rounded">
             <X size={24} />
@@ -106,7 +94,6 @@ export default function PixiComicApp() {
             <User size={20} className={textThemeBlue} /> My Library & Cart ({cart.length})
           </button>
           
-          {/* ඔයාගේ ඊමේල් එකෙන් log වී ඇත්නම් පමණක් Sidebar එකේ Admin පුවරුව පෙනේ */}
           {isAdmin && (
             <button onClick={() => { setScreen('admin'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition text-amber-400">
               <PlusCircle size={20} /> Admin Upload Panel
@@ -130,8 +117,8 @@ export default function PixiComicApp() {
   if (screen === 'welcome') {
     return (
       <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center">
-        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl">
-          <img src="/pixi.jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl bg-white text-blue-600 font-black text-4xl">
+          PIXI
         </div>
         <p className="text-white/80 text-sm font-medium mt-2 tracking-wide">Loading your universe...</p>
       </div>
@@ -142,11 +129,6 @@ export default function PixiComicApp() {
     return (
       <div className="h-screen w-full bg-slate-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
-          <div className="flex justify-center mb-6">
-            <div className="h-12 w-36 overflow-hidden rounded-xl">
-              <img src="/6318815573495714031 (1).jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
-            </div>
-          </div>
           <h2 className="text-2xl font-black text-center mb-2">{isLoginModal ? 'Welcome' : 'Join Pixi'}</h2>
           <p className="text-center text-slate-500 mb-8 text-sm">
             {isLoginModal ? 'Sign in to read your favorite comics' : 'Create an account to start exploring'}
@@ -177,7 +159,6 @@ export default function PixiComicApp() {
                   alert("Please enter your email address!");
                   return;
                 }
-                // ඇතුළත් කළ ඊමේල් ලිපිනය සටහන් කරගනී
                 setLoggedUserEmail(emailInput);
                 setScreen('discover');
               }} 
@@ -207,16 +188,12 @@ export default function PixiComicApp() {
             <Menu size={28} />
           </button>
           
-          <div 
-            className="flex items-center cursor-pointer h-9 w-28 overflow-hidden rounded-lg"
-            onClick={() => setScreen('discover')}
-          >
-            <img src="/6318815573495714031 (1).jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+          <div className="font-black text-xl tracking-wider text-blue-600 cursor-pointer" onClick={() => setScreen('discover')}>
+            PIXI COMICS
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* ඔයාගේ ඊමේල් එකෙන් log වී ඇත්නම් පමණක් Header එකේ upload බටන් එක පෙනේ */}
           {isAdmin && (
             <button onClick={() => setScreen('admin')} className="hidden md:flex items-center gap-1 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full text-xs font-bold border border-amber-500/20 hover:bg-amber-500/20 transition">
               <PlusCircle size={16} /> Admin Upload
@@ -254,70 +231,107 @@ export default function PixiComicApp() {
             <span className="text-xs text-slate-500">{newComics.length} Comics Available</span>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {newComics.map((comic) => (
-              <div 
-                key={comic.id} 
-                className="cursor-pointer group relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300"
-                onClick={() => setSelectedComic(comic)}
-              >
-                <img src={comic.image} alt={comic.title} className="w-full h-56 md:h-72 object-cover group-hover:scale-105 transition duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-4">
-                  <h3 className="text-white font-bold text-sm md:text-base">{comic.title}</h3>
-                  <p className="text-blue-400 font-semibold text-xs mt-1">{comic.price}</p>
+          {newComics.length === 0 ? (
+            <div className="text-center py-16 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-3xl">
+              <p className="text-slate-500 font-medium">No comics available yet.</p>
+              {isAdmin && (
+                <button onClick={() => setScreen('admin')} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold">
+                  Upload First Comic 🚀
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {newComics.map((comic) => (
+                <div 
+                  key={comic.id} 
+                  className="cursor-pointer group relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300"
+                  onClick={() => setSelectedComic(comic)}
+                >
+                  <img src={comic.image} alt={comic.title} className="w-full h-56 md:h-72 object-cover group-hover:scale-105 transition duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-4">
+                    <h3 className="text-white font-bold text-sm md:text-base">{comic.title}</h3>
+                    <p className="text-blue-400 font-semibold text-xs mt-1">{comic.price}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </main>
       )}
 
-      {/* ADMIN SCREEN */}
       {screen === 'admin' && (
         isAdmin ? (
           <main className="max-w-xl mx-auto p-4 py-8">
-            <div className={`p-8 rounded-3xl border shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <h2 className="text-3xl font-black mb-2 text-amber-500">Admin Comic Upload</h2>
-              <p className="text-sm text-slate-500 mb-6">Publish a new comic issue directly to the Discover feed.</p>
+            <div className={`admin-panel p-6 rounded-3xl border shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <h2 className="text-xl font-bold mb-4 text-amber-500">Admin: Add New Comic</h2>
+              
+              {/* Comic Title */}
+              <input 
+                type="text" 
+                placeholder="Comic Name (උදා: Spider-Man Vol 1)" 
+                value={adminTitle} 
+                onChange={(e) => setAdminTitle(e.target.value)}
+                className={`w-full p-3 mb-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+              />
 
-              <form onSubmit={handleUploadComic} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Comic Title</label>
-                  <input 
-                    type="text" 
-                    value={adminTitle} 
-                    onChange={(e) => setAdminTitle(e.target.value)} 
-                    placeholder="e.g. Cyber Punk Episode 2" 
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              {/* Comic Price */}
+              <input 
+                type="text" 
+                placeholder="Price (උදා: $2.99 හෝ Free)" 
+                value={adminPrice} 
+                onChange={(e) => setAdminPrice(e.target.value)}
+                className={`w-full p-3 mb-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+              />
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Price (e.g. $2.99 or Free)</label>
-                  <input 
-                    type="text" 
-                    value={adminPrice} 
-                    onChange={(e) => setAdminPrice(e.target.value)} 
-                    placeholder="$2.99" 
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              {/* Cover Image Link */}
+              <input 
+                type="text" 
+                placeholder="Cover Image Link (Imgur හෝ Google Drive link එකක්)" 
+                value={adminImage} 
+                onChange={(e) => setAdminImage(e.target.value)}
+                className={`w-full p-3 mb-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+              />
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Image Cover URL</label>
-                  <input 
-                    type="text" 
-                    value={adminImage} 
-                    onChange={(e) => setAdminImage(e.target.value)} 
-                    placeholder="https://images.unsplash.com/..." 
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              {/* PDF Link */}
+              <input 
+                type="text" 
+                placeholder="Comic PDF Link (Google Drive Share link එකක්)" 
+                value={adminPdf} 
+                onChange={(e) => setAdminPdf(e.target.value)}
+                className={`w-full p-3 mb-3 border rounded-xl outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+              />
 
-                <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg transition mt-4">
-                  Publish Comic Now 🚀
-                </button>
-              </form>
+              {/* Add Button */}
+              <button 
+                onClick={() => {
+                  if(!adminTitle || !adminPdf) {
+                    alert("කරුණාකර නම සහ PDF ලින්ක් එක ඇතුළත් කරන්න!");
+                    return;
+                  }
+                  
+                  const newComicItem = {
+                    id: Date.now(),
+                    title: adminTitle,
+                    price: adminPrice || 'Free',
+                    image: adminImage || 'https://via.placeholder.com/150',
+                    pdfUrl: adminPdf
+                  };
+
+                  setNewComics([...newComics, newComicItem]);
+                  
+                  // Clear inputs
+                  setAdminTitle('');
+                  setAdminPrice('');
+                  setAdminImage('');
+                  setAdminPdf('');
+                  alert("කොමික් එක සාර්ථකව එකතු විය!");
+                  setScreen('discover');
+                }}
+                className="w-full bg-blue-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-blue-700 transition"
+              >
+                Add Comic to Website
+              </button>
             </div>
           </main>
         ) : (
@@ -345,17 +359,25 @@ export default function PixiComicApp() {
           </div>
 
           <h3 className="text-xl font-bold mb-4 border-b border-slate-300 dark:border-slate-800 pb-2">My Library (Unlocked Comics)</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            {boughtComics.map((comic) => (
-              <div key={comic.id} className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md">
-                <img src={comic.image} alt={comic.title} className="w-full h-48 object-cover" />
-                <div className={`p-3 text-center ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
-                  <p className="text-sm font-bold truncate">{comic.title}</p>
-                  <p className="text-xs text-green-500 font-semibold mt-1">Ready to read</p>
+          {boughtComics.length === 0 ? (
+            <p className="text-sm text-slate-500 mb-10">No purchased comics yet.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+              {boughtComics.map((comic) => (
+                <div 
+                  key={comic.id} 
+                  onClick={() => setReadingComic(comic)}
+                  className="cursor-pointer rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md hover:scale-105 transition"
+                >
+                  <img src={comic.image} alt={comic.title} className="w-full h-48 object-cover" />
+                  <div className={`p-3 text-center ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
+                    <p className="text-sm font-bold truncate">{comic.title}</p>
+                    <p className="text-xs text-green-500 font-semibold mt-1">Click to Read 📖</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <h3 className="text-xl font-bold mb-4 border-b border-slate-300 dark:border-slate-800 pb-2">Cart Items ({cart.length})</h3>
           {cart.length === 0 ? (
@@ -406,7 +428,8 @@ export default function PixiComicApp() {
         </main>
       )}
 
-      {selectedComic && (
+      {/* COMIC DETAILS / PURCHASE MODAL */}
+      {selectedComic && !isCheckout && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className={`max-w-3xl w-full rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
             
@@ -429,54 +452,128 @@ export default function PixiComicApp() {
                   <div className="flex justify-between items-center">
                     <div>
                       <h4 className="font-bold">Add to Cart 🛒</h4>
-                      <p className="text-xs text-slate-500 mt-1">Buy this single comic issue</p>
+                      <p className="text-xs text-slate-500 mt-1">Save to cart for later</p>
                     </div>
-                    <span className="text-xl font-black">{selectedComic.price}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-center gap-4 my-2">
                   <div className="flex-1 h-px bg-slate-300 dark:bg-slate-700"></div>
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">OR GET VIP</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">SECURE CHECKOUT</span>
                   <div className="flex-1 h-px bg-slate-300 dark:bg-slate-700"></div>
                 </div>
 
+                {/* GOLD BORDER BUY NOW BUTTON */}
                 <div 
-                  onClick={() => {
-                    setBoughtComics([...boughtComics, selectedComic]);
-                    alert(`Successfully subscribed & unlocked "${selectedComic.title}" with Premium Pass! 🌟`);
-                    setSelectedComic(null);
-                    setScreen('profile');
-                  }}
-                  className="row relative border-2 border-amber-500 bg-amber-50 dark:bg-amber-500/10 rounded-2xl p-5 cursor-pointer transform hover:scale-[1.02] transition shadow-lg shadow-amber-500/20"
+                  onClick={() => setIsCheckout(true)}
+                  className="relative border-2 border-amber-500 bg-amber-50 dark:bg-amber-500/10 rounded-2xl p-5 cursor-pointer transform hover:scale-[1.02] transition shadow-lg shadow-amber-500/20"
                 >
                   <div className="absolute -top-3 -right-3 bg-amber-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                    Best Value
+                    Instant Access
                   </div>
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-center">
                     <div>
                       <h4 className="font-bold text-amber-600 dark:text-amber-400 text-lg flex items-center gap-2">
-                        (pixi) Premium Pass <CheckCircle size={16} />
+                        Buy Now <CreditCard size={18} />
                       </h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 mb-2">Read this and all other comics instantly.</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Unlock & read immediately via Card Payment</p>
                     </div>
-                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">$4.99<span className="text-sm font-normal">/mo</span></span>
+                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{selectedComic.price}</span>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-              <button 
-                onClick={() => {
-                  setBoughtComics([...boughtComics, selectedComic]);
-                  alert(`Successfully unlocked "${selectedComic.title}"! Added to your Library.`);
-                  setSelectedComic(null);
-                  setScreen('profile');
-                }}
-                className={`w-full mt-6 py-4 rounded-xl font-black text-lg text-white ${themeBlue} flex items-center justify-center gap-2 transition hover:shadow-lg hover:shadow-blue-500/30`}
-              >
-                Instant Unlock & Read <ChevronRight size={20} />
+      {/* BANK DETAILS CHECKOUT MODAL */}
+      {selectedComic && isCheckout && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className={`max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-amber-500 ${darkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-black text-amber-500 flex items-center gap-2">
+                <CreditCard /> Enter Bank Details
+              </h3>
+              <button onClick={() => setIsCheckout(false)} className="p-1 hover:bg-slate-500/20 rounded-full">
+                <X size={20} />
               </button>
             </div>
+            
+            <p className="text-xs text-slate-500 mb-6">Complete your payment of <span className="font-bold text-amber-500">{selectedComic.price}</span> for "{selectedComic.title}"</p>
+
+            <form onSubmit={handlePaymentSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase mb-1 text-slate-400">Card Number</label>
+                <input 
+                  type="text" 
+                  placeholder="4532 •••• •••• ••••" 
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  className={`w-full p-3 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-xs font-bold uppercase mb-1 text-slate-400">Expiry Date</label>
+                  <input 
+                    type="text" 
+                    placeholder="MM/YY" 
+                    value={cardExpiry}
+                    onChange={(e) => setCardExpiry(e.target.value)}
+                    className={`w-full p-3 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`}
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-xs font-bold uppercase mb-1 text-slate-400">CVC / CVV</label>
+                  <input 
+                    type="password" 
+                    placeholder="123" 
+                    maxLength="4"
+                    value={cardCvc}
+                    onChange={(e) => setCardCvc(e.target.value)}
+                    className={`w-full p-3 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-300'}`}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg transition mt-4">
+                Pay {selectedComic.price} & Unlock 🔒
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* COMIC READER VIEW */}
+      {readingComic && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-between p-4 text-white">
+          <div className="w-full flex justify-between items-center max-w-4xl p-4 bg-slate-900/50 rounded-2xl backdrop-blur-md">
+            <h3 className="font-bold text-lg">{readingComic.title} (Reader Mode)</h3>
+            <div className="flex items-center gap-3">
+              {readingComic.pdfUrl && (
+                <a 
+                  href={readingComic.pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition"
+                >
+                  Open PDF 📄
+                </a>
+              )}
+              <button onClick={() => setReadingComic(null)} className="p-2 bg-white/20 rounded-full hover:bg-white/40">
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-center justify-center p-4 max-w-xl overflow-hidden">
+            <img src={readingComic.image} alt={readingComic.title} className="max-h-[75vh] object-contain rounded-xl shadow-2xl border border-white/10" />
+          </div>
+
+          <div className="text-xs text-slate-400">
+            Scroll down or swipe to flip pages (Simulation View)
           </div>
         </div>
       )}
