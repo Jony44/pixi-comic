@@ -20,7 +20,7 @@ export default function PixiComicApp() {
   const ADMIN_EMAIL = "maneesharavihara0@gmail.com";
   const isAdmin = loggedUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
-  // Comics Data State (Default + Admin Uploaded)
+  // Comics Data State
   const [comicsList, setComicsList] = useState([
     {
       id: 1,
@@ -32,16 +32,22 @@ export default function PixiComicApp() {
     }
   ]);
 
-  // Admin Form States for Uploading Comic with PDF
+  // Admin Form States
   const [adminTitle, setAdminTitle] = useState('');
   const [adminPrice, setAdminPrice] = useState('Free');
   const [adminImage, setAdminImage] = useState('');
   const [adminPdf, setAdminPdf] = useState('');
   const [adminTotalPages, setAdminTotalPages] = useState('10');
 
-  // Reader States (Bookmark System)
+  // Reader States
   const [readingComic, setReadingComic] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Touch Swipe States for Mobile
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
 
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
@@ -52,6 +58,26 @@ export default function PixiComicApp() {
       return () => clearTimeout(timer);
     }
   }, [screen]);
+
+  // ==========================================
+  // ⌨️ Keyboard Arrows Support for Reader
+  // ==========================================
+  useEffect(() => {
+    if (screen !== 'reader' || !readingComic) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        changePage(currentPage + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        changePage(currentPage - 1);
+      } else if (e.key === 'Escape') {
+        closeReader();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [screen, readingComic, currentPage]);
 
   // Handle Comic Upload by Admin
   const handleUploadComic = (e) => {
@@ -84,7 +110,6 @@ export default function PixiComicApp() {
     setScreen('discover');
   };
 
-  // Bookmark (Save Page) Logic for Reader
   const startReading = (comic) => {
     const savedPage = localStorage.getItem(`bookmark_${loggedUserEmail}_${comic.id}`);
     const startPage = savedPage ? parseInt(savedPage, 10) : 1;
@@ -95,7 +120,7 @@ export default function PixiComicApp() {
   };
 
   const changePage = (newPage) => {
-    if (newPage >= 1 && newPage <= readingComic.totalPages) {
+    if (readingComic && newPage >= 1 && newPage <= readingComic.totalPages) {
       setCurrentPage(newPage);
       localStorage.setItem(`bookmark_${loggedUserEmail}_${readingComic.id}`, newPage);
     }
@@ -104,6 +129,33 @@ export default function PixiComicApp() {
   const closeReader = () => {
     setReadingComic(null);
     setScreen('discover');
+  };
+
+  // ==========================================
+  // 📱 Mobile Swipe Handlers
+  // ==========================================
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Swipe Left -> Next Page
+      changePage(currentPage + 1);
+    } else if (isRightSwipe) {
+      // Swipe Right -> Previous Page
+      changePage(currentPage - 1);
+    }
   };
 
   const Sidebar = () => (
@@ -221,23 +273,44 @@ export default function PixiComicApp() {
     );
   }
 
-  // Comic Reader View
+  // ==========================================
+  // 📖 Comic Reader View (Desktop Side Arrows + Swipe + Keyboard)
+  // ==========================================
   if (screen === 'reader' && readingComic) {
     return (
-      <div className="h-screen w-full bg-slate-900 text-white flex flex-col">
-        <div className="flex items-center justify-between p-4 bg-slate-950 border-b border-slate-800">
+      <div 
+        className="h-screen w-full bg-slate-900 text-white flex flex-col select-none"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        {/* Top Navigation Bar */}
+        <div className="flex items-center justify-between p-4 bg-slate-950 border-b border-slate-800 z-10">
           <button onClick={closeReader} className="flex items-center gap-2 text-slate-400 hover:text-white transition">
             <ArrowLeft size={20} /> Back to Discover
           </button>
           <div className="text-center">
             <h3 className="font-bold">{readingComic.title}</h3>
-            <p className="text-xs text-slate-400">Page {currentPage} of {readingComic.totalPages}</p>
+            <p className="text-xs text-slate-400">Page {currentPage} of {readingComic.totalPages} <span className="hidden md:inline">(Use ← → keys)</span></p>
           </div>
           <div className="w-20"></div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-white rounded-lg shadow-2xl overflow-hidden flex items-center justify-center h-[80vh] relative">
+        {/* Main Reader Content Area with Desktop Side Arrows */}
+        <div className="flex-1 flex items-center justify-between px-2 md:px-12 relative overflow-hidden">
+          
+          {/* Left Arrow Button (Desktop Only/Hidden on mobile for clean look) */}
+          <button
+            onClick={() => changePage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="hidden md:flex absolute left-4 z-20 p-4 bg-slate-800/80 hover:bg-slate-700 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
+            title="Previous Page (Left Arrow Key)"
+          >
+            <ArrowLeft size={32} />
+          </button>
+
+          {/* Comic Page Display Box */}
+          <div className="w-full max-w-2xl bg-white rounded-lg shadow-2xl overflow-hidden flex items-center justify-center h-[75vh] mx-auto relative">
              <div className="text-slate-900 text-center p-10">
                 <BookOpen size={64} className="text-blue-200 mx-auto mb-4" />
                 <h2 className="text-2xl font-black mb-2">PDF Reader View</h2>
@@ -245,25 +318,39 @@ export default function PixiComicApp() {
                 {readingComic.pdfUrl && (
                   <p className="text-xs text-blue-500 mt-2 break-all">Source: {readingComic.pdfUrl}</p>
                 )}
-                <p className="text-xs text-slate-400 mt-6">(Progress is automatically bookmarked)</p>
+                <p className="text-xs text-slate-400 mt-6">(Swipe on phone or use keyboard arrows)</p>
              </div>
           </div>
+
+          {/* Right Arrow Button (Desktop Only) */}
+          <button
+            onClick={() => changePage(currentPage + 1)}
+            disabled={currentPage === readingComic.totalPages}
+            className="hidden md:flex absolute right-4 z-20 p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
+            title="Next Page (Right Arrow Key)"
+          >
+            <ArrowRight size={32} />
+          </button>
         </div>
 
-        <div className="p-4 bg-slate-950 flex justify-center gap-6 border-t border-slate-800">
+        {/* Bottom Pagination Bar (Mobile friendly buttons) */}
+        <div className="p-4 bg-slate-950 flex justify-between items-center px-6 md:justify-center md:gap-6 border-t border-slate-800">
           <button 
             onClick={() => changePage(currentPage - 1)} 
             disabled={currentPage === 1}
-            className="p-3 bg-slate-800 rounded-full disabled:opacity-50 hover:bg-slate-700 transition"
+            className="px-4 py-2 bg-slate-800 rounded-xl disabled:opacity-50 hover:bg-slate-700 transition flex items-center gap-2 text-sm font-bold md:hidden"
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={18} /> Prev
           </button>
+          
+          <span className="text-xs text-slate-400 md:hidden">Swipe left/right to navigate</span>
+
           <button 
             onClick={() => changePage(currentPage + 1)} 
             disabled={currentPage === readingComic.totalPages}
-            className="p-3 bg-blue-600 rounded-full disabled:opacity-50 hover:bg-blue-500 transition"
+            className="px-4 py-2 bg-blue-600 rounded-xl disabled:opacity-50 hover:bg-blue-500 transition flex items-center gap-2 text-sm font-bold md:hidden"
           >
-            <ArrowRight size={24} />
+            Next <ArrowRight size={18} />
           </button>
         </div>
       </div>
@@ -447,7 +534,7 @@ export default function PixiComicApp() {
         </main>
       )}
 
-      {/* Comic Details & Instant Read Modal */}
+      {/* Comic Details Modal */}
       {selectedComic && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className={`max-w-xl w-full rounded-3xl overflow-hidden shadow-2xl flex flex-col ${darkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}>
