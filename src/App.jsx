@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Menu, Search, Settings, LogOut,
-  User, Moon, Sun, X, PlusCircle, Trash2, Lock, BookOpen, ArrowLeft, ArrowRight
+  User, Moon, Sun, X, PlusCircle, Lock, BookOpen, ArrowLeft
 } from 'lucide-react';
 
 export default function PixiComicApp() {
@@ -24,11 +24,11 @@ export default function PixiComicApp() {
   const [comicsList, setComicsList] = useState([
     {
       id: 1,
-      title: 'Doomquest',
+      title: 'Spider Verse Part 1',
       price: 'Free',
-      image: '6294257036396533852.jpg',
+      image: 'https://images.unsplash.com/photo-1608889476561-6242cfdbf622?w=300&q=80',
       pdfUrl: 'Doomquest003(2026).pdf',
-      totalPages: '23'
+      totalPages: 23
     }
   ]);
 
@@ -41,13 +41,6 @@ export default function PixiComicApp() {
 
   // Reader States
   const [readingComic, setReadingComic] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Touch Swipe States for Mobile
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-
-  const minSwipeDistance = 50;
 
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
@@ -58,26 +51,6 @@ export default function PixiComicApp() {
       return () => clearTimeout(timer);
     }
   }, [screen]);
-
-  // ==========================================
-  // ⌨️ Keyboard Arrows Support for Reader
-  // ==========================================
-  useEffect(() => {
-    if (screen !== 'reader' || !readingComic) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        changePage(currentPage + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        changePage(currentPage - 1);
-      } else if (e.key === 'Escape') {
-        closeReader();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [screen, readingComic, currentPage]);
 
   // Handle Comic Upload by Admin
   const handleUploadComic = (e) => {
@@ -111,51 +84,13 @@ export default function PixiComicApp() {
   };
 
   const startReading = (comic) => {
-    const savedPage = localStorage.getItem(`bookmark_${loggedUserEmail}_${comic.id}`);
-    const startPage = savedPage ? parseInt(savedPage, 10) : 1;
-    
     setReadingComic(comic);
-    setCurrentPage(startPage);
     setScreen('reader');
-  };
-
-  const changePage = (newPage) => {
-    if (readingComic && newPage >= 1 && newPage <= readingComic.totalPages) {
-      setCurrentPage(newPage);
-      localStorage.setItem(`bookmark_${loggedUserEmail}_${readingComic.id}`, newPage);
-    }
   };
 
   const closeReader = () => {
     setReadingComic(null);
     setScreen('discover');
-  };
-
-  // ==========================================
-  // 📱 Mobile Swipe Handlers
-  // ==========================================
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      // Swipe Left -> Next Page
-      changePage(currentPage + 1);
-    } else if (isRightSwipe) {
-      // Swipe Right -> Previous Page
-      changePage(currentPage - 1);
-    }
   };
 
   const Sidebar = () => (
@@ -274,22 +209,15 @@ export default function PixiComicApp() {
   }
 
   // ==========================================
- // ==========================================
-  // 📖 Comic Reader View (Real PDF Viewer)
+  // 📖 Comic Reader View (Continuous Scroll)
   // ==========================================
   if (screen === 'reader' && readingComic) {
-    // PDF file path eka proper widihata hada ganeema
     const pdfSource = readingComic.pdfUrl.startsWith('http') 
       ? readingComic.pdfUrl 
       : `/${readingComic.pdfUrl}`;
 
     return (
-      <div 
-        className="h-screen w-full bg-slate-900 text-white flex flex-col select-none"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
+      <div className="h-screen w-full bg-slate-900 text-white flex flex-col select-none">
         {/* Top Navigation Bar */}
         <div className="flex items-center justify-between p-4 bg-slate-950 border-b border-slate-800 z-10">
           <button onClick={closeReader} className="flex items-center gap-2 text-slate-400 hover:text-white transition">
@@ -297,66 +225,27 @@ export default function PixiComicApp() {
           </button>
           <div className="text-center">
             <h3 className="font-bold">{readingComic.title}</h3>
-            <p className="text-xs text-slate-400">Page {currentPage} of {readingComic.totalPages}</p>
+            <p className="text-xs text-slate-400">Continuous Scroll View</p>
           </div>
           <div className="w-20"></div>
         </div>
 
-        {/* Main Reader Content Area - iframe මඟින් PDF එක පෙන්වීම */}
-        <div className="flex-1 flex items-center justify-center px-2 md:px-12 relative overflow-hidden">
-          
-          <button
-            onClick={() => changePage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="hidden md:flex absolute left-4 z-20 p-4 bg-slate-800/80 hover:bg-slate-700 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
-          >
-            <ArrowLeft size={32} />
-          </button>
-
-          {/* PDF Display Frame */}
-          <div className="w-full max-w-4xl bg-black rounded-lg shadow-2xl overflow-hidden h-[80vh] mx-auto relative flex items-center justify-center">
+        {/* Main PDF Viewer Area */}
+        <div className="flex-1 flex items-center justify-center p-2 md:p-6 overflow-hidden">
+          <div className="w-full max-w-4xl bg-black rounded-lg shadow-2xl overflow-hidden h-full">
             {readingComic.pdfUrl ? (
-             <embed
-  src={`/${readingComic.pdfUrl}#page=${currentPage}`}
-  type="application/pdf"
-  className="w-full h-full"
-/>
+              <iframe
+                src={`${pdfSource}#view=FitH&toolbar=1`}
+                title={readingComic.title}
+                className="w-full h-full border-0"
+              />
             ) : (
-              <div className="text-white text-center p-6">
-                <BookOpen size={48} className="mx-auto mb-2 text-blue-400" />
+              <div className="text-white text-center p-6 flex flex-col items-center justify-center h-full">
+                <BookOpen size={48} className="mb-2 text-blue-400" />
                 <p>No PDF attached for this comic yet.</p>
               </div>
             )}
           </div>
-
-          <button
-            onClick={() => changePage(currentPage + 1)}
-            disabled={currentPage === readingComic.totalPages}
-            className="hidden md:flex absolute right-4 z-20 p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
-          >
-            <ArrowRight size={32} />
-          </button>
-        </div>
-
-        {/* Bottom Pagination Bar */}
-        <div className="p-4 bg-slate-950 flex justify-between items-center px-6 md:justify-center md:gap-6 border-t border-slate-800">
-          <button 
-            onClick={() => changePage(currentPage - 1)} 
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-slate-800 rounded-xl disabled:opacity-50 hover:bg-slate-700 transition flex items-center gap-2 text-sm font-bold md:hidden"
-          >
-            <ArrowLeft size={18} /> Prev
-          </button>
-          
-          <span className="text-xs text-slate-400 md:hidden">Swipe left/right to navigate</span>
-
-          <button 
-            onClick={() => changePage(currentPage + 1)} 
-            disabled={currentPage === readingComic.totalPages}
-            className="px-4 py-2 bg-blue-600 rounded-xl disabled:opacity-50 hover:bg-blue-500 transition flex items-center gap-2 text-sm font-bold md:hidden"
-          >
-            Next <ArrowRight size={18} />
-          </button>
         </div>
       </div>
     );
@@ -461,12 +350,12 @@ export default function PixiComicApp() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">PDF File URL</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">PDF File Name</label>
                   <input
                     type="text"
                     value={adminPdf}
                     onChange={(e) => setAdminPdf(e.target.value)}
-                    placeholder="/pdfs/comic-name.pdf or external link"
+                    placeholder="Doomquest003(2026).pdf"
                     className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
                   />
                 </div>
@@ -477,7 +366,7 @@ export default function PixiComicApp() {
                     type="number"
                     value={adminTotalPages}
                     onChange={(e) => setAdminTotalPages(e.target.value)}
-                    placeholder="24"
+                    placeholder="23"
                     className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
                   />
                 </div>
