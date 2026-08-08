@@ -26,9 +26,9 @@ export default function PixiComicApp() {
       id: 1,
       title: 'Spider Verse Part 1',
       price: 'Free',
-      image: 'https://images.unsplash.com/photo-1608889476561-6242cfdbf622?w=300&q=80',
-      pdfUrl: '',
-      totalPages: 10
+      image: '6294257036396533852.jpg',
+      pdfUrl: 'Doomquest 003 (2026).pdf',
+      totalPages: 
     }
   ]);
 
