@@ -27,7 +27,7 @@ export default function PixiComicApp() {
       title: 'Doomquest',
       price: 'Free',
       image: '6294257036396533852.jpg',
-      pdfUrl: 'Doomquest 003 (2026).pdf',
+      pdfUrl: 'Doomquest003(2026).pdf',
       totalPages: '23'
     }
   ]);
@@ -274,9 +274,15 @@ export default function PixiComicApp() {
   }
 
   // ==========================================
-  // 📖 Comic Reader View (Desktop Side Arrows + Swipe + Keyboard)
+ // ==========================================
+  // 📖 Comic Reader View (Real PDF Viewer)
   // ==========================================
   if (screen === 'reader' && readingComic) {
+    // PDF file path eka proper widihata hada ganeema
+    const pdfSource = readingComic.pdfUrl.startsWith('http') 
+      ? readingComic.pdfUrl 
+      : `/${readingComic.pdfUrl}`;
+
     return (
       <div 
         className="h-screen w-full bg-slate-900 text-white flex flex-col select-none"
@@ -291,49 +297,48 @@ export default function PixiComicApp() {
           </button>
           <div className="text-center">
             <h3 className="font-bold">{readingComic.title}</h3>
-            <p className="text-xs text-slate-400">Page {currentPage} of {readingComic.totalPages} <span className="hidden md:inline">(Use ← → keys)</span></p>
+            <p className="text-xs text-slate-400">Page {currentPage} of {readingComic.totalPages}</p>
           </div>
           <div className="w-20"></div>
         </div>
 
-        {/* Main Reader Content Area with Desktop Side Arrows */}
-        <div className="flex-1 flex items-center justify-between px-2 md:px-12 relative overflow-hidden">
+        {/* Main Reader Content Area - iframe මඟින් PDF එක පෙන්වීම */}
+        <div className="flex-1 flex items-center justify-center px-2 md:px-12 relative overflow-hidden">
           
-          {/* Left Arrow Button (Desktop Only/Hidden on mobile for clean look) */}
           <button
             onClick={() => changePage(currentPage - 1)}
             disabled={currentPage === 1}
             className="hidden md:flex absolute left-4 z-20 p-4 bg-slate-800/80 hover:bg-slate-700 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
-            title="Previous Page (Left Arrow Key)"
           >
             <ArrowLeft size={32} />
           </button>
 
-          {/* Comic Page Display Box */}
-          <div className="w-full max-w-2xl bg-white rounded-lg shadow-2xl overflow-hidden flex items-center justify-center h-[75vh] mx-auto relative">
-             <div className="text-slate-900 text-center p-10">
-                <BookOpen size={64} className="text-blue-200 mx-auto mb-4" />
-                <h2 className="text-2xl font-black mb-2">PDF Reader View</h2>
-                <p className="text-slate-500">Reading page <strong className="text-blue-600">{currentPage}</strong></p>
-                {readingComic.pdfUrl && (
-                  <p className="text-xs text-blue-500 mt-2 break-all">Source: {readingComic.pdfUrl}</p>
-                )}
-                <p className="text-xs text-slate-400 mt-6">(Swipe on phone or use keyboard arrows)</p>
-             </div>
+          {/* PDF Display Frame */}
+          <div className="w-full max-w-4xl bg-black rounded-lg shadow-2xl overflow-hidden h-[80vh] mx-auto relative flex items-center justify-center">
+            {readingComic.pdfUrl ? (
+              <iframe
+                src={`${pdfSource}#page=${currentPage}&toolbar=0&navpanes=0`}
+                title={readingComic.title}
+                className="w-full h-full border-0"
+              />
+            ) : (
+              <div className="text-white text-center p-6">
+                <BookOpen size={48} className="mx-auto mb-2 text-blue-400" />
+                <p>No PDF attached for this comic yet.</p>
+              </div>
+            )}
           </div>
 
-          {/* Right Arrow Button (Desktop Only) */}
           <button
             onClick={() => changePage(currentPage + 1)}
             disabled={currentPage === readingComic.totalPages}
             className="hidden md:flex absolute right-4 z-20 p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full disabled:opacity-30 disabled:cursor-not-allowed shadow-2xl transition transform hover:scale-110"
-            title="Next Page (Right Arrow Key)"
           >
             <ArrowRight size={32} />
           </button>
         </div>
 
-        {/* Bottom Pagination Bar (Mobile friendly buttons) */}
+        {/* Bottom Pagination Bar */}
         <div className="p-4 bg-slate-950 flex justify-between items-center px-6 md:justify-center md:gap-6 border-t border-slate-800">
           <button 
             onClick={() => changePage(currentPage - 1)} 
