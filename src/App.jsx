@@ -30,22 +30,22 @@ export default function PixiComicApp() {
       title: 'Spider-Man (2008) Brand New Day Vol 01',
       price: '$4.99',
       image: 'https://i.imgur.com/SaYjAZk.jpeg', // මෙතැනට අලුත් නම දාන්න
-      checkoutUrl: '...',
+      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
       totalPages: 23
     },
     {
       id: 2,
       title: 'spider-man (2009) Brand New Day Vol 02',
       price: '$4.99',
-      image: '/comic2.jpg', // මෙතැනටත්
+      image: 'https://i.imgur.com/nMMCOjV.jpeg', // මෙතැනටත්
       checkoutUrl: '...',
       totalPages: 24
     },
      {
       id: 3,
       title: 'spider-man (2009) Brand New Day Vol 03',
-      price: '$7.50',
-      image: '/comic3.jpg', // මෙතැනටත්
+      price: '$4.99',
+      image: 'https://i.imgur.com/vdFhVg3.jpeg', // මෙතැනටත්
       checkoutUrl: '...',
       totalPages: 24
      }
@@ -115,7 +115,7 @@ export default function PixiComicApp() {
       <div className={`fixed top-0 left-0 h-full w-72 bg-slate-900 text-white z-50 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} shadow-2xl flex flex-col`}>
         <div className="p-6 border-b border-slate-800 flex justify-between items-center">
           <div className="h-8 w-28 overflow-hidden rounded-md cursor-pointer flex items-center" onClick={() => { setScreen('discover'); setIsMenuOpen(false); }}>
-            <img src="/6318815573495714036.jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+            <img src="https://i.imgur.com/PNkqsSa.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
           </div>
           <button onClick={() => setIsMenuOpen(false)} className="p-1 hover:bg-slate-800 rounded">
             <X size={24} />
@@ -155,7 +155,7 @@ export default function PixiComicApp() {
     return (
       <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center">
         <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl">
-          <img src="/pixi.jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
         </div>
         <p className="text-white/80 text-sm font-medium mt-2 tracking-wide">Loading your universe...</p>
       </div>
@@ -168,7 +168,7 @@ export default function PixiComicApp() {
         <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
           <div className="flex justify-center mb-6">
             <div className="h-12 w-36 overflow-hidden rounded-xl">
-              <img src="/6318815573495714031 (1).jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+              <img src="https://i.imgur.com/YPcn0bd.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
             </div>
           </div>
           <h2 className="text-2xl font-black text-center mb-2">{isLoginModal ? 'Welcome' : 'Join Pixi'}</h2>
@@ -230,7 +230,7 @@ export default function PixiComicApp() {
           </button>
           
           <div className="flex items-center cursor-pointer h-9 w-28 overflow-hidden rounded-lg" onClick={() => setScreen('discover')}>
-            <img src="/6318815573495714031 (1).jpg" alt="Pixi Logo" className="w-full h-full object-cover" />
+            <img src="https://i.imgur.com/YPcn0bd.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
           </div>
         </div>
 
