@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_RWyiWUYmo3xKrnX4JXmjWENF720s",
+      "name": "pixi-comic",
+      "directory": ".",
+      "orgId": "team_8PTCvnSTYd2tDWEiRpEXkiZM"
+    }
+  ]
+}
