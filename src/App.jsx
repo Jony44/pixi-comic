@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { comicsList } from './comicsData';
+import { comicsList } from './comicsData.js';
 import {
   Menu, Search, Settings, LogOut,
   User, Moon, Sun, X, PlusCircle, Lock, BookOpen, CreditCard, CheckCircle
