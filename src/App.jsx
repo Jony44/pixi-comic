@@ -29,7 +29,7 @@ export default function PixiComicApp() {
       id: 1,
       title: 'Spider-Man (2008) Brand New Day Vol 01',
       price: '$4.99',
-      image: '/comic1.jpg', // මෙතැනට අලුත් නම දාන්න
+      image: 'https://i.imgur.com/SaYjAZk.jpeg', // මෙතැනට අලුත් නම දාන්න
       checkoutUrl: '...',
       totalPages: 23
     },
