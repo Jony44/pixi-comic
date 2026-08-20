@@ -24,33 +24,32 @@ export default function PixiComicApp() {
   const isAdmin = loggedUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   // Comics Data State (Fixed image paths with leading slash)
-  const [comicsList, setComicsList] = useState([
+ const [comicsList, setComicsList] = useState([
     {
       id: 1,
       title: 'Spider-Man (2008) Brand New Day Vol 01',
       price: '$4.99',
-      image: '/6300756533096159469 (1).jpg',
-      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
+      image: '/comic1.jpg', // මෙතැනට අලුත් නම දාන්න
+      checkoutUrl: '...',
       totalPages: 23
     },
     {
       id: 2,
       title: 'spider-man (2009) Brand New Day Vol 02',
       price: '$4.99',
-      image: '/6303008332909843959.jpg',
-      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
+      image: '/comic2.jpg', // මෙතැනටත්
+      checkoutUrl: '...',
       totalPages: 24
     },
      {
       id: 3,
       title: 'spider-man (2009) Brand New Day Vol 03',
       price: '$7.50',
-      image: '/6303008332909843960.jpg',
-      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
+      image: '/comic3.jpg', // මෙතැනටත්
+      checkoutUrl: '...',
       totalPages: 24
      }
   ]);
-
   // Search Filter Logic
   const filteredComics = comicsList.filter((comic) =>
     comic.title.toLowerCase().includes(searchQuery.toLowerCase())
