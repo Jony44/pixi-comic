@@ -23,13 +23,13 @@ export default function PixiComicApp() {
   const ADMIN_EMAIL = "maneesharavihara0@gmail.com";
   const isAdmin = loggedUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
-  // Comics Data State
+  // Comics Data State (Fixed image paths with leading slash)
   const [comicsList, setComicsList] = useState([
     {
       id: 1,
       title: 'Spider-Man (2008) Brand New Day Vol 01',
       price: '$4.99',
-      image: '6300756533096159469 (1).jpg',
+      image: '/6300756533096159469 (1).jpg',
       checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
       totalPages: 23
     },
@@ -37,7 +37,7 @@ export default function PixiComicApp() {
       id: 2,
       title: 'spider-man (2009) Brand New Day Vol 02',
       price: '$4.99',
-      image: '6303008332909843959.jpg',
+      image: '/6303008332909843959.jpg',
       checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
       totalPages: 24
     },
@@ -45,7 +45,7 @@ export default function PixiComicApp() {
       id: 3,
       title: 'spider-man (2009) Brand New Day Vol 03',
       price: '$7.50',
-      image: '6303008332909843960.jpg',
+      image: '/6303008332909843960.jpg',
       checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
       totalPages: 24
      }
@@ -439,7 +439,6 @@ export default function PixiComicApp() {
               <p className="text-sm text-slate-500 mb-6">Total Pages: {selectedComic.totalPages}</p>
 
               <div className="space-y-3">
-                {/* මුදල් ගෙවීම සඳහා Lemon Squeezy Checkout Link එක */}
                 <a 
                   href={selectedComic.checkoutUrl} 
                   target="_blank" 
