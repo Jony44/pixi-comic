@@ -30,16 +30,16 @@ export default function PixiComicApp() {
       title: 'Spider-Man (2008) Brand New Day Vol 01',
       price: '$4.99',
       image: 'https://i.imgur.com/SaYjAZk.jpeg', // මෙතැනට අලුත් නම දාන්න
-      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
-      totalPages: 23
+      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/3e514cbf-36e7-4368-b3ab-7b2d75772885?discount=0',
+      totalPages: 197
     },
     {
       id: 2,
       title: 'spider-man (2009) Brand New Day Vol 02',
       price: '$4.99',
       image: 'https://i.imgur.com/nMMCOjV.jpeg', // මෙතැනටත්
-      checkoutUrl: '...',
-      totalPages: 24
+      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/390e469e-ca84-44fc-8263-b518d8c25947?discount=0',
+      totalPages: 168
     },
      {
       id: 3,
@@ -47,7 +47,7 @@ export default function PixiComicApp() {
       price: '$4.99',
       image: 'https://i.imgur.com/vdFhVg3.jpeg', // මෙතැනටත්
       checkoutUrl: '...',
-      totalPages: 24
+      totalPages: 128
      }
   ]);
   // Search Filter Logic
