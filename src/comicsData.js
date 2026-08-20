@@ -28,7 +28,7 @@ export const [comicsList, setComicsList] = useState([
       title: 'Absolute Green Arrow #4 (2026)',
       price: '$4.99',
       image: 'https://i.imgur.com/L6qaQCy.jpeg', // මෙතැනටත්
-      checkoutUrl: '',
+      checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/5f9d79d9-ba6d-4c33-b155-7f479790e27a',
       totalPages: 28
      }
 
