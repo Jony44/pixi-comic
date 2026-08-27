@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { comicsList } from './comicsData.js';
 import {
   Menu, Search, Settings,
-  User, Moon, Sun, X, PlusCircle, CreditCard
+  Moon, Sun, X, CreditCard
 } from 'lucide-react';
 
 export default function PixiComicApp() {
@@ -14,61 +14,21 @@ export default function PixiComicApp() {
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Admin Email Configuration (Always Admin now or direct access)
-  const isAdmin = true; // දැන් හැමෝටම හෝ ඇමින් කෙනෙක් ලෙස පහසුවෙන් ක්‍රියාත්මක වේ
-
   // Search Filter Logic
   const filteredComics = comicsList.filter((comic) =>
     comic.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Admin Form States
-  const [adminTitle, setAdminTitle] = useState('');
-  const [adminPrice, setAdminPrice] = useState('$3.99');
-  const [adminImage, setAdminImage] = useState('');
-  const [adminCheckoutUrl, setAdminCheckoutUrl] = useState('');
-  const [adminPdfUrl, setAdminPdfUrl] = useState('');
-  const [adminTotalPages, setAdminTotalPages] = useState('10');
-
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Splash Screen Animation Effect (Zoom in & Blur effect)
+  // Splash Screen Animation Effect (Zoom in & Fade out to Discover)
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 2500);
+      const timer = setTimeout(() => setScreen('discover'), 2600);
       return () => clearTimeout(timer);
     }
   }, [screen]);
-
-  // Handle Comic Upload by Admin
-  const handleUploadComic = (e) => {
-    e.preventDefault();
-    if (!adminTitle || !adminImage) {
-      alert("Please fill title and image fields!");
-      return;
-    }
-
-    const newEntry = {
-      id: Date.now(),
-      title: adminTitle,
-      price: adminPrice || 'Free',
-      image: adminImage,
-      checkoutUrl: adminCheckoutUrl || 'https://pixicomics.lemonsqueezy.com/checkout/buy/d4f5f3de-b1fb-45ff-83d9-9f3de564e56f?discount=0',
-      pdfUrl: adminPdfUrl || '#',
-      totalPages: parseInt(adminTotalPages, 10) || 10
-    };
-
-    comicsList.unshift(newEntry);
-    setAdminTitle('');
-    setAdminPrice('$3.99');
-    setAdminImage('');
-    setAdminCheckoutUrl('');
-    setAdminPdfUrl('');
-    setAdminTotalPages('10');
-    alert("Comic uploaded successfully! 🚀");
-    setScreen('discover');
-  };
 
   const Sidebar = () => (
     <>
@@ -91,10 +51,6 @@ export default function PixiComicApp() {
             <Search size={20} className={textThemeBlue} /> Discover Comics
           </button>
           
-          <button onClick={() => { setScreen('admin'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition text-amber-400">
-            <PlusCircle size={20} /> Admin Upload Panel
-          </button>
-          
           <button onClick={() => { setScreen('settings'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition">
             <Settings size={20} className={textThemeBlue} /> Settings
           </button>
@@ -103,14 +59,14 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Welcome Screen with Zoom-in and Blur Animation
+  // Welcome Screen with Logo Zoom-in and Fade Out Effect
   if (screen === 'welcome') {
     return (
-      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden">
-        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl animate-pulse transition-all duration-1000 transform scale-110 hover:scale-125 filter blur-[0.5px]">
-          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover transition-transform duration-700 transform hover:scale-110" />
+      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
+        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl transition-all duration-1000 transform scale-125 animate-ping opacity-90">
+          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover animate-pulse" />
         </div>
-        <p className="text-white/90 text-sm font-bold tracking-wider animate-bounce">Loading Pixi Universe...</p>
+        <p className="text-white/90 text-sm font-bold tracking-wider animate-pulse mt-4">Welcome to Pixi Comics...</p>
       </div>
     );
   }
@@ -127,18 +83,12 @@ export default function PixiComicApp() {
             <img src="https://i.imgur.com/YPcn0bd.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <button onClick={() => setScreen('admin')} className="hidden md:flex items-center gap-1 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full text-xs font-bold border border-amber-500/20 hover:bg-amber-500/20 transition">
-            <PlusCircle size={16} /> Admin Upload
-          </button>
-        </div>
       </header>
 
       <Sidebar />
 
       {screen === 'discover' && (
-        <main className="max-w-5xl mx-auto p-4 py-8">
+        <main className="max-w-5xl mx-auto p-4 py-8 animate-fadeIn">
           <div className="relative mb-10">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search size={20} className="text-slate-400" />
@@ -171,88 +121,6 @@ export default function PixiComicApp() {
                 </div>
               </div>
             ))}
-          </div>
-        </main>
-      )}
-
-      {/* ADMIN SCREEN */}
-      {screen === 'admin' && (
-        <main className="max-w-xl mx-auto p-4 py-8">
-          <div className={`p-8 rounded-3xl border shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-            <h2 className="text-3xl font-black mb-2 text-amber-500">Admin Comic Upload</h2>
-            <p className="text-sm text-slate-500 mb-6">Publish a new comic issue and attach its checkout and PDF link.</p>
-
-            <form onSubmit={handleUploadComic} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Comic Title</label>
-                <input
-                  type="text"
-                  value={adminTitle}
-                  onChange={(e) => setAdminTitle(e.target.value)}
-                  placeholder="e.g. Cyber Punk Episode 2"
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Price (e.g. $3.99)</label>
-                <input
-                  type="text"
-                  value={adminPrice}
-                  onChange={(e) => setAdminPrice(e.target.value)}
-                  placeholder="$3.99"
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Image Cover URL</label>
-                <input
-                  type="text"
-                  value={adminImage}
-                  onChange={(e) => setAdminImage(e.target.value)}
-                  placeholder="https://..."
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Lemon Squeezy Checkout URL</label>
-                <input
-                  type="text"
-                  value={adminCheckoutUrl}
-                  onChange={(e) => setAdminCheckoutUrl(e.target.value)}
-                  placeholder="https://pixicomics.lemonsqueezy.com/checkout/buy/..."
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">PDF Download URL (Supabase/Drive link)</label>
-                <input
-                  type="text"
-                  value={adminPdfUrl}
-                  onChange={(e) => setAdminPdfUrl(e.target.value)}
-                  placeholder="https://...file.pdf"
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Total Pages</label>
-                <input
-                  type="number"
-                  value={adminTotalPages}
-                  onChange={(e) => setAdminTotalPages(e.target.value)}
-                  placeholder="23"
-                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                />
-              </div>
-
-              <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg transition mt-4">
-                Publish Comic & PDF 🚀
-              </button>
-            </form>
           </div>
         </main>
       )}
