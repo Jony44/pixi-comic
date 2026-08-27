@@ -22,10 +22,10 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Splash screen timer
+  // Splash screen transition with Netflix style Zoom-In ending
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 3200);
+      const timer = setTimeout(() => setScreen('discover'), 3400);
       return () => clearTimeout(timer);
     }
   }, [screen]);
@@ -59,10 +59,10 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Realistic 3D Book Page Flip Welcome Screen
+  // Netflix Style Page Flipping & Zoom-In Welcome Screen
   if (screen === 'welcome') {
     return (
-      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden">
+      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden netflix-zoom-container">
         <div className="book-container">
           <div className="book">
             <div className="page">
@@ -73,16 +73,19 @@ export default function PixiComicApp() {
           </div>
         </div>
         
-        <h2 className="text-white font-black tracking-widest text-lg mt-12 animate-pulse drop-shadow-md">PIXI COMICS</h2>
+        <h2 className="text-white font-black tracking-widest text-xl mt-12 drop-shadow-lg animate-pulse">PIXI COMICS</h2>
 
         <style>{`
+          .netflix-zoom-container {
+            animation: netflixZoomOut 0.6s ease-in-out 2.8s forwards;
+          }
           .book-container {
             perspective: 1200px;
           }
           .book {
             position: relative;
-            width: 140px;
-            height: 180px;
+            width: 150px;
+            height: 200px;
             transform-style: preserve-3d;
             animation: floatBook 3s ease-in-out infinite;
           }
@@ -96,12 +99,12 @@ export default function PixiComicApp() {
             border-radius: 4px 12px 12px 4px;
             transform-origin: left center;
             transform-style: preserve-3d;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
             overflow: hidden;
             border-left: 3px solid #cbd5e1;
           }
           .page:nth-child(1) {
-            animation: flip 1.6s ease-in-out infinite alternate;
+            animation: flip 1.4s ease-in-out infinite alternate;
             z-index: 3;
           }
           .page:nth-child(2) {
@@ -114,11 +117,15 @@ export default function PixiComicApp() {
           }
           @keyframes flip {
             0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(-145deg); }
+            100% { transform: rotateY(-150deg); }
           }
           @keyframes floatBook {
             0%, 100% { transform: translateY(0) rotateX(10deg); }
-            50% { transform: translateY(-10px) rotateX(10deg); }
+            50% { transform: translateY(-12px) rotateX(10deg); }
+          }
+          @keyframes netflixZoomOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3.5); opacity: 0; filter: blur(4px); }
           }
         `}</style>
       </div>
@@ -129,11 +136,11 @@ export default function PixiComicApp() {
     <div className={`min-h-screen transition-colors duration-300 animate-fadeIn ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.98); }
+          from { opacity: 0; transform: scale(0.92); }
           to { opacity: 1; transform: scale(1); }
         }
         .animate-fadeIn {
-          animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: fadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
