@@ -30,7 +30,7 @@ export const comicsList = [
     image: 'https://i.imgur.com/L6qaQCy.jpeg',
     checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/5f9d79d9-ba6d-4c33-b155-7f479790e27a',
     totalPages: 28
-  }
+  },
 {
     id: 5,
     title: 'Batman Under the Red Hood (2011)',
