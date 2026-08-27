@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { comicsList } from './comicsData.js';
 import {
   Menu, Search, Settings,
-  Moon, Sun, X, CreditCard
+  Moon, Sun, X, CreditCard, BookOpen
 } from 'lucide-react';
 
 export default function PixiComicApp() {
@@ -22,10 +22,10 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Duolingo style smooth transition effect
+  // Splash screen timer for comic page flip effect
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 2400);
+      const timer = setTimeout(() => setScreen('discover'), 2800);
       return () => clearTimeout(timer);
     }
   }, [screen]);
@@ -59,17 +59,25 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Duolingo Style Splash Screen (Zoom in Logo Animation)
+  // Comic Book Page Flipping Welcome Screen Animation
   if (screen === 'welcome') {
     return (
-      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden transition-all duration-700">
-        <div className="w-44 h-44 flex items-center justify-center overflow-hidden rounded-full shadow-2xl bg-white p-4 animate-[zoomIn_1.5s_ease-in-out_infinite_alternate]">
-          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover rounded-full transform transition-transform duration-1000 scale-110" />
+      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden">
+        <div className="relative w-48 h-64 bg-white rounded-r-2xl rounded-l-md shadow-2xl flex items-center justify-center p-2 animate-[pageFlip_1.4s_ease-in-out_infinite_alternate] border-l-4 border-slate-300">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+            <BookOpen size={48} className="text-blue-500 mb-2 animate-bounce" />
+            <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-24 h-24 object-cover rounded-xl shadow-md mb-2" />
+            <span className="text-slate-800 font-black text-sm tracking-widest">PIXI COMICS</span>
+          </div>
         </div>
+        
+        <p className="text-white font-bold tracking-wider mt-8 animate-pulse text-sm">Opening Comic Universe...</p>
+
         <style>{`
-          @keyframes zoomIn {
-            0% { transform: scale(0.85); opacity: 0.8; }
-            100% { transform: scale(1.15); opacity: 1; }
+          @keyframes pageFlip {
+            0% { transform: perspective(1000px) rotateY(0deg) scale(0.9); }
+            50% { transform: perspective(1000px) rotateY(-15deg) scale(1.05); }
+            100% { transform: perspective(1000px) rotateY(0deg) scale(1.1); }
           }
         `}</style>
       </div>
