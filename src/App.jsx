@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { comicsList } from './comicsData.js';
 import {
   Menu, Search, Settings,
-  Moon, Sun, X, CreditCard, BookOpen
+  Moon, Sun, X, CreditCard
 } from 'lucide-react';
 
 export default function PixiComicApp() {
@@ -22,10 +22,10 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Splash screen timer for comic page flip effect
+  // Splash screen timer
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 2800);
+      const timer = setTimeout(() => setScreen('discover'), 3200);
       return () => clearTimeout(timer);
     }
   }, [screen]);
@@ -59,25 +59,66 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Comic Book Page Flipping Welcome Screen Animation
+  // Realistic 3D Book Page Flip Welcome Screen
   if (screen === 'welcome') {
     return (
       <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden">
-        <div className="relative w-48 h-64 bg-white rounded-r-2xl rounded-l-md shadow-2xl flex items-center justify-center p-2 animate-[pageFlip_1.4s_ease-in-out_infinite_alternate] border-l-4 border-slate-300">
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-            <BookOpen size={48} className="text-blue-500 mb-2 animate-bounce" />
-            <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-24 h-24 object-cover rounded-xl shadow-md mb-2" />
-            <span className="text-slate-800 font-black text-sm tracking-widest">PIXI COMICS</span>
+        <div className="book-container">
+          <div className="book">
+            <div className="page">
+              <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
+            </div>
+            <div className="page"></div>
+            <div className="page"></div>
           </div>
         </div>
         
-        <p className="text-white font-bold tracking-wider mt-8 animate-pulse text-sm">Opening Comic Universe...</p>
+        <h2 className="text-white font-black tracking-widest text-lg mt-12 animate-pulse drop-shadow-md">PIXI COMICS</h2>
 
         <style>{`
-          @keyframes pageFlip {
-            0% { transform: perspective(1000px) rotateY(0deg) scale(0.9); }
-            50% { transform: perspective(1000px) rotateY(-15deg) scale(1.05); }
-            100% { transform: perspective(1000px) rotateY(0deg) scale(1.1); }
+          .book-container {
+            perspective: 1200px;
+          }
+          .book {
+            position: relative;
+            width: 140px;
+            height: 180px;
+            transform-style: preserve-3d;
+            animation: floatBook 3s ease-in-out infinite;
+          }
+          .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 4px 12px 12px 4px;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border-left: 3px solid #cbd5e1;
+          }
+          .page:nth-child(1) {
+            animation: flip 1.6s ease-in-out infinite alternate;
+            z-index: 3;
+          }
+          .page:nth-child(2) {
+            background: #f8fafc;
+            z-index: 2;
+          }
+          .page:nth-child(3) {
+            background: #e2e8f0;
+            z-index: 1;
+          }
+          @keyframes flip {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(-145deg); }
+          }
+          @keyframes floatBook {
+            0%, 100% { transform: translateY(0) rotateX(10deg); }
+            50% { transform: translateY(-10px) rotateX(10deg); }
           }
         `}</style>
       </div>
