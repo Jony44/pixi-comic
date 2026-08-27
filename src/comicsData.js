@@ -37,7 +37,15 @@ export const comicsList = [
     price: '$2.99',
     image: 'https://i.imgur.com/28DjCNd.jpeg',
     checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/dded158c-0a8d-4c47-9d69-1e56028ee64e?discount=0',
-    totalPages: 28
+    totalPages: 378
+  },
+  {
+    id: 6,
+    title: 'Siege - Dark Avengers (2011)',
+    price: '$2.99',
+    image: 'https://i.imgur.com/IXNWxmH.jpeg',
+    checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/2f4f6985-8dbe-4961-894e-f4d9d4f0f155?discount=0',
+    totalPages: 111
   },
 
 
