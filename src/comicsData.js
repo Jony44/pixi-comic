@@ -31,4 +31,35 @@ export const comicsList = [
     checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/5f9d79d9-ba6d-4c33-b155-7f479790e27a',
     totalPages: 28
   }
+{
+    id: 5,
+    title: 'Batman Under the Red Hood (2011)',
+    price: '$2.99',
+    image: 'https://i.imgur.com/28DjCNd.jpeg',
+    checkoutUrl: 'https://pixicomics.lemonsqueezy.com/checkout/buy/dded158c-0a8d-4c47-9d69-1e56028ee64e?discount=0',
+    totalPages: 28
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ];
