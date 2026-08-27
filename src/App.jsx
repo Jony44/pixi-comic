@@ -22,10 +22,10 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Splash Screen Animation Effect (Zoom in & Fade out to Discover)
+  // Duolingo style smooth transition effect
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 2600);
+      const timer = setTimeout(() => setScreen('discover'), 2400);
       return () => clearTimeout(timer);
     }
   }, [screen]);
@@ -59,20 +59,35 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Welcome Screen with Logo Zoom-in and Fade Out Effect
+  // Duolingo Style Splash Screen (Zoom in Logo Animation)
   if (screen === 'welcome') {
     return (
-      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
-        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl transition-all duration-1000 transform scale-125 animate-ping opacity-90">
-          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover animate-pulse" />
+      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden transition-all duration-700">
+        <div className="w-44 h-44 flex items-center justify-center overflow-hidden rounded-full shadow-2xl bg-white p-4 animate-[zoomIn_1.5s_ease-in-out_infinite_alternate]">
+          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover rounded-full transform transition-transform duration-1000 scale-110" />
         </div>
-        <p className="text-white/90 text-sm font-bold tracking-wider animate-pulse mt-4">Welcome to Pixi Comics...</p>
+        <style>{`
+          @keyframes zoomIn {
+            0% { transform: scale(0.85); opacity: 0.8; }
+            100% { transform: scale(1.15); opacity: 1; }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
+    <div className={`min-h-screen transition-colors duration-300 animate-fadeIn ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+
       <header className={`sticky top-0 z-30 flex items-center justify-between p-4 shadow-sm backdrop-blur-md ${darkMode ? 'bg-slate-900/80 border-b border-slate-800' : 'bg-white/80 border-b border-slate-200'}`}>
         <div className="flex items-center gap-3">
           <button onClick={() => setIsMenuOpen(true)} className="p-2 hover:bg-slate-500/20 rounded-lg">
@@ -88,7 +103,7 @@ export default function PixiComicApp() {
       <Sidebar />
 
       {screen === 'discover' && (
-        <main className="max-w-5xl mx-auto p-4 py-8 animate-fadeIn">
+        <main className="max-w-5xl mx-auto p-4 py-8">
           <div className="relative mb-10">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search size={20} className="text-slate-400" />
