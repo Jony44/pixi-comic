@@ -22,11 +22,40 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
-  // Splash screen transition with Netflix style Zoom-In ending
+  // You provided comic pages for the flipping intro animation
+  const introImages = [
+    "https://i.imgur.com/SaYjAZk.jpeg",
+    "https://i.imgur.com/nMMCOjV.jpeg",
+    "https://i.imgur.com/vdFhVg3.jpeg",
+    "https://i.imgur.com/L6qaQCy.jpeg",
+    "https://i.imgur.com/28DjCNd.jpeg",
+    "https://i.imgur.com/FzqqPF7.jpeg",
+    "https://i.imgur.com/IXNWxmH.jpeg"
+  ];
+
+  const [currentIntroIndex, setCurrentIntroIndex] = useState(0);
+
+  // Cycle through the provided images while flipping pages, then zoom in to discover
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('discover'), 3400);
-      return () => clearTimeout(timer);
+      const interval = setInterval(() => {
+        setCurrentIntroIndex((prev) => {
+          if (prev < introImages.length - 1) {
+            return prev + 1;
+          } else {
+            return prev;
+          }
+        });
+      }, 500); // Change image every 0.5 seconds as pages flip
+
+      const timer = setTimeout(() => {
+        setScreen('discover');
+      }, 4000); // Total welcome time before Netflix zoom out
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timer);
+      };
     }
   }, [screen]);
 
@@ -59,17 +88,19 @@ export default function PixiComicApp() {
     </>
   );
 
-  // Netflix Style Page Flipping & Zoom-In Welcome Screen
+  // Custom Page Flipping & Netflix Zoom-In Welcome Screen using your images
   if (screen === 'welcome') {
     return (
       <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden netflix-zoom-container">
         <div className="book-container">
           <div className="book">
-            <div className="page">
-              <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
+            <div className="page shadow-2xl">
+              <img 
+                src={introImages[currentIntroIndex]} 
+                alt="Comic Page Flip" 
+                className="w-full h-full object-cover transition-all duration-300" 
+              />
             </div>
-            <div className="page"></div>
-            <div className="page"></div>
           </div>
         </div>
         
@@ -77,15 +108,15 @@ export default function PixiComicApp() {
 
         <style>{`
           .netflix-zoom-container {
-            animation: netflixZoomOut 0.6s ease-in-out 2.8s forwards;
+            animation: netflixZoomOut 0.8s cubic-bezier(0.7, 0, 0.84, 0.2) 3.2s forwards;
           }
           .book-container {
             perspective: 1200px;
           }
           .book {
             position: relative;
-            width: 150px;
-            height: 200px;
+            width: 180px;
+            height: 250px;
             transform-style: preserve-3d;
             animation: floatBook 3s ease-in-out infinite;
           }
@@ -96,36 +127,25 @@ export default function PixiComicApp() {
             width: 100%;
             height: 100%;
             background: white;
-            border-radius: 4px 12px 12px 4px;
+            border-radius: 6px 14px 14px 6px;
             transform-origin: left center;
             transform-style: preserve-3d;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             overflow: hidden;
-            border-left: 3px solid #cbd5e1;
+            border-left: 4px solid #cbd5e1;
+            animation: pageFlipEffect 0.5s ease-in-out infinite alternate;
           }
-          .page:nth-child(1) {
-            animation: flip 1.4s ease-in-out infinite alternate;
-            z-index: 3;
-          }
-          .page:nth-child(2) {
-            background: #f8fafc;
-            z-index: 2;
-          }
-          .page:nth-child(3) {
-            background: #e2e8f0;
-            z-index: 1;
-          }
-          @keyframes flip {
+          @keyframes pageFlipEffect {
             0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(-150deg); }
+            100% { transform: rotateY(-18deg); }
           }
           @keyframes floatBook {
-            0%, 100% { transform: translateY(0) rotateX(10deg); }
-            50% { transform: translateY(-12px) rotateX(10deg); }
+            0%, 100% { transform: translateY(0) rotateX(8deg); }
+            50% { transform: translateY(-10px) rotateX(8deg); }
           }
           @keyframes netflixZoomOut {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(3.5); opacity: 0; filter: blur(4px); }
+            100% { transform: scale(4.5); opacity: 0; filter: blur(6px); }
           }
         `}</style>
       </div>
