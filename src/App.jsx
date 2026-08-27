@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { comicsList } from './comicsData.js';
 import {
-  Menu, Search, Settings, LogOut,
-  User, Moon, Sun, X, PlusCircle, Lock, BookOpen, CreditCard, CheckCircle
+  Menu, Search, Settings,
+  User, Moon, Sun, X, PlusCircle, CreditCard
 } from 'lucide-react';
 
 export default function PixiComicApp() {
   const [screen, setScreen] = useState('welcome');
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginModal, setIsLoginModal] = useState(true);
   const [selectedComic, setSelectedComic] = useState(null);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
 
-  // User States
-  const [emailInput, setEmailInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
-  const [loggedUserEmail, setLoggedUserEmail] = useState('');
+  // Admin Email Configuration (Always Admin now or direct access)
+  const isAdmin = true; // දැන් හැමෝටම හෝ ඇමින් කෙනෙක් ලෙස පහසුවෙන් ක්‍රියාත්මක වේ
 
-  // Admin Email Configuration
-  const ADMIN_EMAIL = "maneesharavihara0@gmail.com";
-  const isAdmin = loggedUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-
-  // Comics Data State (Fixed image paths with leading slash)
- 
   // Search Filter Logic
   const filteredComics = comicsList.filter((comic) =>
     comic.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -42,9 +33,10 @@ export default function PixiComicApp() {
   const themeBlue = "bg-blue-600 hover:bg-blue-700";
   const textThemeBlue = "text-blue-600";
 
+  // Splash Screen Animation Effect (Zoom in & Blur effect)
   useEffect(() => {
     if (screen === 'welcome') {
-      const timer = setTimeout(() => setScreen('auth'), 3000);
+      const timer = setTimeout(() => setScreen('discover'), 2500);
       return () => clearTimeout(timer);
     }
   }, [screen]);
@@ -52,10 +44,6 @@ export default function PixiComicApp() {
   // Handle Comic Upload by Admin
   const handleUploadComic = (e) => {
     e.preventDefault();
-    if (!isAdmin) {
-      alert("Unauthorized! Only Admin can upload comics.");
-      return;
-    }
     if (!adminTitle || !adminImage) {
       alert("Please fill title and image fields!");
       return;
@@ -71,14 +59,14 @@ export default function PixiComicApp() {
       totalPages: parseInt(adminTotalPages, 10) || 10
     };
 
-    setComicsList([newEntry, ...comicsList]);
+    comicsList.unshift(newEntry);
     setAdminTitle('');
     setAdminPrice('$3.99');
     setAdminImage('');
     setAdminCheckoutUrl('');
     setAdminPdfUrl('');
     setAdminTotalPages('10');
-    alert("Comic uploaded successfully by Admin! 🚀");
+    alert("Comic uploaded successfully! 🚀");
     setScreen('discover');
   };
 
@@ -103,96 +91,26 @@ export default function PixiComicApp() {
             <Search size={20} className={textThemeBlue} /> Discover Comics
           </button>
           
-          <button onClick={() => { setScreen('profile'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition">
-            <User size={20} className={textThemeBlue} /> My Profile
+          <button onClick={() => { setScreen('admin'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition text-amber-400">
+            <PlusCircle size={20} /> Admin Upload Panel
           </button>
-          
-          {isAdmin && (
-            <button onClick={() => { setScreen('admin'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition text-amber-400">
-              <PlusCircle size={20} /> Admin Upload Panel
-            </button>
-          )}
           
           <button onClick={() => { setScreen('settings'); setIsMenuOpen(false); }} className="flex items-center gap-4 w-full p-3 hover:bg-slate-800 rounded-xl transition">
             <Settings size={20} className={textThemeBlue} /> Settings
-          </button>
-        </div>
-
-        <div className="p-4 border-t border-slate-800">
-          <button onClick={() => { setLoggedUserEmail(''); setScreen('welcome'); }} className="flex items-center gap-4 w-full p-3 hover:bg-red-500/20 text-red-400 rounded-xl transition">
-            <LogOut size={20} /> Log Out
           </button>
         </div>
       </div>
     </>
   );
 
+  // Welcome Screen with Zoom-in and Blur Animation
   if (screen === 'welcome') {
     return (
-      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center">
-        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl">
-          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
+      <div className="h-screen w-full bg-[#38B6FF] flex flex-col items-center justify-center overflow-hidden">
+        <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden rounded-3xl shadow-2xl animate-pulse transition-all duration-1000 transform scale-110 hover:scale-125 filter blur-[0.5px]">
+          <img src="https://i.imgur.com/Uz1WWUD.jpeg" alt="Pixi Logo" className="w-full h-full object-cover transition-transform duration-700 transform hover:scale-110" />
         </div>
-        <p className="text-white/80 text-sm font-medium mt-2 tracking-wide">Loading your universe...</p>
-      </div>
-    );
-  }
-
-  if (screen === 'auth') {
-    return (
-      <div className="h-screen w-full bg-slate-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
-          <div className="flex justify-center mb-6">
-            <div className="h-12 w-36 overflow-hidden rounded-xl">
-              <img src="https://i.imgur.com/YPcn0bd.jpeg" alt="Pixi Logo" className="w-full h-full object-cover" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-black text-center mb-2">{isLoginModal ? 'Welcome' : 'Join Pixi'}</h2>
-          <p className="text-center text-slate-500 mb-8 text-sm">
-            {isLoginModal ? 'Sign in to read your favorite comics' : 'Create an account to start exploring'}
-          </p>
-          
-          <div className="space-y-4">
-            {!isLoginModal && (
-              <input type="text" placeholder="Full Name" className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:border-blue-500" />
-            )}
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-              className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:border-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:border-blue-500"
-            />
-            
-            <button
-              onClick={() => {
-                if (!emailInput) {
-                  alert("Please enter your email address!");
-                  return;
-                }
-                setLoggedUserEmail(emailInput);
-                setScreen('discover');
-              }}
-              className={`w-full py-3.5 text-white font-bold rounded-xl mt-4 ${themeBlue} transition shadow-lg shadow-blue-500/20`}
-            >
-              {isLoginModal ? 'Sign In' : 'Sign Up'}
-            </button>
-          </div>
-
-          <div className="mt-6 text-center text-sm text-slate-600">
-            {isLoginModal ? "New here? " : "Already have an account? "}
-            <button onClick={() => setIsLoginModal(!isLoginModal)} className={`font-bold ${textThemeBlue}`}>
-              {isLoginModal ? 'Create an account' : 'Log In'}
-            </button>
-          </div>
-        </div>
+        <p className="text-white/90 text-sm font-bold tracking-wider animate-bounce">Loading Pixi Universe...</p>
       </div>
     );
   }
@@ -211,14 +129,8 @@ export default function PixiComicApp() {
         </div>
 
         <div className="flex items-center gap-3">
-          {isAdmin && (
-            <button onClick={() => setScreen('admin')} className="hidden md:flex items-center gap-1 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full text-xs font-bold border border-amber-500/20 hover:bg-amber-500/20 transition">
-              <PlusCircle size={16} /> Admin Upload
-            </button>
-          )}
-
-          <button onClick={() => setScreen('profile')} className="p-2 bg-slate-200 dark:bg-slate-800 rounded-full hover:scale-105 transition">
-            <User size={20} />
+          <button onClick={() => setScreen('admin')} className="hidden md:flex items-center gap-1 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full text-xs font-bold border border-amber-500/20 hover:bg-amber-500/20 transition">
+            <PlusCircle size={16} /> Admin Upload
           </button>
         </div>
       </header>
@@ -265,107 +177,82 @@ export default function PixiComicApp() {
 
       {/* ADMIN SCREEN */}
       {screen === 'admin' && (
-        isAdmin ? (
-          <main className="max-w-xl mx-auto p-4 py-8">
-            <div className={`p-8 rounded-3xl border shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <h2 className="text-3xl font-black mb-2 text-amber-500">Admin Comic Upload</h2>
-              <p className="text-sm text-slate-500 mb-6">Publish a new comic issue and attach its checkout and PDF link.</p>
+        <main className="max-w-xl mx-auto p-4 py-8">
+          <div className={`p-8 rounded-3xl border shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+            <h2 className="text-3xl font-black mb-2 text-amber-500">Admin Comic Upload</h2>
+            <p className="text-sm text-slate-500 mb-6">Publish a new comic issue and attach its checkout and PDF link.</p>
 
-              <form onSubmit={handleUploadComic} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Comic Title</label>
-                  <input
-                    type="text"
-                    value={adminTitle}
-                    onChange={(e) => setAdminTitle(e.target.value)}
-                    placeholder="e.g. Cyber Punk Episode 2"
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+            <form onSubmit={handleUploadComic} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Comic Title</label>
+                <input
+                  type="text"
+                  value={adminTitle}
+                  onChange={(e) => setAdminTitle(e.target.value)}
+                  placeholder="e.g. Cyber Punk Episode 2"
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Price (e.g. $3.99)</label>
-                  <input
-                    type="text"
-                    value={adminPrice}
-                    onChange={(e) => setAdminPrice(e.target.value)}
-                    placeholder="$3.99"
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Price (e.g. $3.99)</label>
+                <input
+                  type="text"
+                  value={adminPrice}
+                  onChange={(e) => setAdminPrice(e.target.value)}
+                  placeholder="$3.99"
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Image Cover URL</label>
-                  <input
-                    type="text"
-                    value={adminImage}
-                    onChange={(e) => setAdminImage(e.target.value)}
-                    placeholder="https://..."
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Image Cover URL</label>
+                <input
+                  type="text"
+                  value={adminImage}
+                  onChange={(e) => setAdminImage(e.target.value)}
+                  placeholder="https://..."
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Lemon Squeezy Checkout URL</label>
-                  <input
-                    type="text"
-                    value={adminCheckoutUrl}
-                    onChange={(e) => setAdminCheckoutUrl(e.target.value)}
-                    placeholder="https://pixicomics.lemonsqueezy.com/checkout/buy/..."
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Lemon Squeezy Checkout URL</label>
+                <input
+                  type="text"
+                  value={adminCheckoutUrl}
+                  onChange={(e) => setAdminCheckoutUrl(e.target.value)}
+                  placeholder="https://pixicomics.lemonsqueezy.com/checkout/buy/..."
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">PDF Download URL (Supabase/Drive link)</label>
-                  <input
-                    type="text"
-                    value={adminPdfUrl}
-                    onChange={(e) => setAdminPdfUrl(e.target.value)}
-                    placeholder="https://...file.pdf"
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">PDF Download URL (Supabase/Drive link)</label>
+                <input
+                  type="text"
+                  value={adminPdfUrl}
+                  onChange={(e) => setAdminPdfUrl(e.target.value)}
+                  placeholder="https://...file.pdf"
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Total Pages</label>
-                  <input
-                    type="number"
-                    value={adminTotalPages}
-                    onChange={(e) => setAdminTotalPages(e.target.value)}
-                    placeholder="23"
-                    className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-400">Total Pages</label>
+                <input
+                  type="number"
+                  value={adminTotalPages}
+                  onChange={(e) => setAdminTotalPages(e.target.value)}
+                  placeholder="23"
+                  className={`w-full p-3.5 rounded-xl border outline-none ${darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300'}`}
+                />
+              </div>
 
-                <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg transition mt-4">
-                  Publish Comic & PDF 🚀
-                </button>
-              </form>
-            </div>
-          </main>
-        ) : (
-          <div className="h-[80vh] flex flex-col items-center justify-center text-center p-4">
-            <Lock size={64} className="text-red-500 mb-4" />
-            <h2 className="text-2xl font-black mb-2">Access Denied</h2>
-            <p className="text-slate-500 mb-6">You do not have permission to view the Admin panel.</p>
-            <button onClick={() => setScreen('discover')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
-              Back to Discover
-            </button>
-          </div>
-        )
-      )}
-
-      {screen === 'profile' && (
-        <main className="max-w-3xl mx-auto p-4 py-8">
-          <div className="flex items-center gap-6 mb-10">
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold ${themeBlue} text-white shadow-lg`}>
-              {loggedUserEmail ? loggedUserEmail.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold">{loggedUserEmail || 'User'}</h2>
-              <p className="text-slate-500 text-sm">{isAdmin ? 'Administrator' : 'Reader'}</p>
-            </div>
+              <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg transition mt-4">
+                Publish Comic & PDF 🚀
+              </button>
+            </form>
           </div>
         </main>
       )}
@@ -401,7 +288,7 @@ export default function PixiComicApp() {
           <div className={`max-w-xl w-full rounded-3xl overflow-hidden shadow-2xl flex flex-col ${darkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}>
             <div className="relative h-64">
               <img src={selectedComic.image} alt={selectedComic.title} className="w-full h-full object-cover" />
-              <button onClick={() => setSelectedComic(null)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70">
+              <button onClick={() => setSelectedComic(null)} className="absolute top-4 right-4 p-2 bg-black/55 text-white rounded-full hover:bg-black/75">
                 <X size={20} />
               </button>
             </div>
